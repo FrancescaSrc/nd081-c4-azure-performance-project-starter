@@ -22,20 +22,14 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-# For metrics
-stats = stats_module.stats
-view_manager = stats.view_manager
-config_integration.trace_integrations(['logging'])
-config_integration.trace_integrations(['requests'])
+
 instrumentationKey='InstrumentationKey=38f952a4-b9fa-4740-ac04-a2743f7c64fb'
+
 # Logging
 logger = logging.getLogger(__name__)
-handler = AzureLogHandler(connection_string=instrumentationKey)
+logger.addHandler(AzureLogHandler(connection_string=instrumentationKey))
 handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
-eventHandler = AzureEventHandler(connection_string=instrumentationKey)
-logger.addHandler(handler)
-logger.addHandler(eventHandler)
-handler.setLevel(logging.INFO)
+
 logger.setLevel(logging.INFO)
 
 # Metrics
@@ -50,7 +44,6 @@ tracer = Tracer(
      connection_string=instrumentationKey),
  sampler=ProbabilitySampler(1.0),
 )
-app = Flask(__name__)
 
 app = Flask(__name__)
 
@@ -133,17 +126,9 @@ def index():
             vote = request.form['vote']
             r.incr(vote,1)
             
-            vote0 = r.get(vote).decode('utf-8')
-
             # Get current values
-            vote1 = r.get(button1).decode('utf-8')
-            properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            # TODO: use logger object to log cat vote
-            logger.info('Cats Vote', extra=properties)
-            vote2 = r.get(button2).decode('utf-8')
-            properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            # TODO: use logger object to log dog vote
-            logger.info('Dogs Vote', extra=properties)
+            vote1 = r.get(button1).decode('utf-8')         
+            vote2 = r.get(button2).decode('utf-8')           
 
             # Return results
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
