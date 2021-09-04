@@ -25,6 +25,8 @@ from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 # For metrics
 stats = stats_module.stats
 view_manager = stats.view_manager
+config_integration.trace_integrations(['logging'])
+config_integration.trace_integrations(['requests'])
 
 # Logging
 logger = logging.getLogger(__name__)
@@ -139,6 +141,6 @@ def index():
 
 if __name__ == "__main__":
     # comment line below when deploying to VMSS
-    app.run() # local
+    #app.run() # local
     # uncomment the line below before deployment to VMSS
-    # app.run(host='0.0.0.0', threaded=True, debug=True) # remote
+    app.run(host='0.0.0.0', threaded=True, debug=True) # remote
