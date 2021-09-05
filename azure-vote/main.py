@@ -23,14 +23,17 @@ from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
 
-instrumentationKey='InstrumentationKey=38f952a4-b9fa-4740-ac04-a2743f7c64fb'
+instrumentationKey='InstrumentationKey=84844733-e73b-4823-92f7-d0fc6e369e87'
 
 # Logging
 logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(connection_string=instrumentationKey))
+handler = AzureLogHandler(connection_string=instrumentationKey)
 handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
-
+logger.addHandler(handler)
+logger.addHandler(AzureEventHandler(connection_string=instrumentationKey))
+# Set the logging level
 logger.setLevel(logging.INFO)
+logger.info('Cats and dogs events')
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
@@ -93,10 +96,14 @@ def index():
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
         # TODO: use tracer object to trace cat vote
-        tracer.span(name="Cats Vote")
+        tracer.span(name='Cats Vote')
+        with tracer.span(name='Cats Vote') as span:
+         print('Cats Vote')
         vote2 = r.get(button2).decode('utf-8')
         # TODO: use tracer object to trace dog vote
-        tracer.span(name="Dogs Vote")
+        tracer.span(name='Dogs Vote')
+        with tracer.span(name='Dogs Vote') as span:
+         print('Dogs Vote')
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
@@ -111,12 +118,12 @@ def index():
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
             # TODO: use logger object to log cat vote
-            logger.info('Cat Vote', extra=properties)
+            logger.warning('Cat Vote', extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
             # TODO: use logger object to log dog vote
-            logger.info('Dog Vote', extra=properties)
+            logger.warning('Dog Vote', extra=properties)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
@@ -127,8 +134,8 @@ def index():
             r.incr(vote,1)
             
             # Get current values
-            vote1 = r.get(button1).decode('utf-8')         
-            vote2 = r.get(button2).decode('utf-8')           
+            vote1 = r.get(button1).decode('utf-8')
+            vote2 = r.get(button2).decode('utf-8')
 
             # Return results
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
