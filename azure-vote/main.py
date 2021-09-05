@@ -28,7 +28,6 @@ instrumentationKey='InstrumentationKey=84844733-e73b-4823-92f7-d0fc6e369e87'
 # Logging
 logger = logging.getLogger(__name__)
 handler = AzureLogHandler(connection_string=instrumentationKey)
-handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
 logger.addHandler(handler)
 logger.addHandler(AzureEventHandler(connection_string=instrumentationKey))
 # Set the logging level
