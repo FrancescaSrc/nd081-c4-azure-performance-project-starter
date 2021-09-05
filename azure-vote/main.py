@@ -39,7 +39,6 @@ logger.info('Cats and dogs events')
 exporter = metrics_exporter.new_metrics_exporter(
 enable_standard_metrics=True,
 connection_string=instrumentationKey)
-view_manager.register_exporter(exporter)
 
 # Tracing
 tracer = Tracer(
