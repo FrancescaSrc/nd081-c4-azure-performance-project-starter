@@ -23,7 +23,7 @@ from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
 
-instrumentationKey='InstrumentationKey=2180c34d-91ad-4524-bbe9-1e6d0b1011ea'
+instrumentationKey='InstrumentationKey=111d1c76-6650-4c55-8d26-23433fe80669'
 
 # Logging
 logger = logging.getLogger(__name__)
